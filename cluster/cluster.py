@@ -18,5 +18,11 @@ class Cluster(object):
     def cleanup(self):
         pass
 
+    def pre_bench(self):
+        pass
+
+    def post_bench(self):
+        pass
+
     def __str__(self):
         return str(self.config)

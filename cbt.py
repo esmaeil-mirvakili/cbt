@@ -82,7 +82,9 @@ def main(argv):
                     b.initialize()
                 # Always try to initialize endpoints before running the test
                 b.initialize_endpoints()
+                cluster.pre_bench()
                 b.run()
+                cluster.post_bench()
     except:
         return_code = 1  # FAIL
         logger.exception("During tests")

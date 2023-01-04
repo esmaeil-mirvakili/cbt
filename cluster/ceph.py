@@ -930,6 +930,18 @@ class Ceph(Cluster):
         self.mkpool('default.rgw.buckets.index', rgw_pools.get('buckets_index', 'default'), 'rgw')
         self.mkpool('default.rgw.buckets.data', rgw_pools.get('buckets_data', 'default'), 'rgw')
 
+    def pre_bench(self):
+        osds = settings.getnodes('osds')
+        for osd_index, osd_host in enumerate(osds.split(',')):
+            common.pdsh(osd_host, 'sudo %s daemon osd.%d reset log vector' % (self.ceph_cmd, osd_index),
+                        continue_if_error=False).communicate()
+
+    def post_bench(self):
+        osds = settings.getnodes('osds')
+        for osd_index, osd_host in enumerate(osds.split(',')):
+            common.pdsh(osd_host, 'sudo %s daemon osd.%d dump log vector' % (self.ceph_cmd, osd_index),
+                        continue_if_error=False).communicate()
+
 class RecoveryTestThreadBlocking(threading.Thread):
     def __init__(self, config, cluster, callback, stoprequest, haltrequest):
         threading.Thread.__init__(self)
