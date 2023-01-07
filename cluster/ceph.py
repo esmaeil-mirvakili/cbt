@@ -932,13 +932,15 @@ class Ceph(Cluster):
 
     def pre_bench(self):
         osds = settings.getnodes('osds')
-        for osd_index, osd_host in enumerate(osds.split(',')):
+        for osd_host in osds.split(','):
+            osd_index = int(osd_host[-1])
             common.pdsh(osd_host, 'sudo %s daemon osd.%d reset log vector' % (self.ceph_cmd, osd_index),
                         continue_if_error=False).communicate()
 
     def post_bench(self):
         osds = settings.getnodes('osds')
-        for osd_index, osd_host in enumerate(osds.split(',')):
+        for osd_host in osds.split(','):
+            osd_index = int(osd_host[-1])
             common.pdsh(osd_host, 'sudo %s daemon osd.%d dump log vector' % (self.ceph_cmd, osd_index),
                         continue_if_error=False).communicate()
 
