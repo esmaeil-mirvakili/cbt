@@ -199,7 +199,7 @@ class Fio(Benchmark):
                 cmd += ' --log_avg_msec=%d' % self.log_avg_msec
         cmd += ' --output-format=%s' % self.fio_out_format
         if self.extra_config is not None:
-            for key, value in self.config.items():
+            for key, value in self.extra_config.items():
                 cmd += f' --{key}={value}'
         # End the fio_cmd
         cmd += ' > %s' % (out_file)
