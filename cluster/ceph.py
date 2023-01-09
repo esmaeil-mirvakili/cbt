@@ -943,6 +943,10 @@ class Ceph(Cluster):
             osd_index = int(osd_host[-1])
             common.pdsh(osd_host, 'sudo %s daemon osd.%d dump log vector' % (self.ceph_cmd, osd_index),
                         continue_if_error=True).communicate()
+        time.sleep(10)
+        os.makedirs(os.path.join(self.config.get('archive_dir'), 'codel_logs'))
+        common.sync_files('/users/esmaeil/codel_log_txc.csv', os.path.join(self.config.get('archive_dir'), 'codel_logs'))
+
 
 class RecoveryTestThreadBlocking(threading.Thread):
     def __init__(self, config, cluster, callback, stoprequest, haltrequest):
