@@ -173,7 +173,7 @@ def rpdcp(nodes, flags, remotefile, localdir):
         return sh(local_node, ['for', 'i', 'in', remotefile, ';',
                                'do', 'cp', flags, '${i}', "%s/$(basename ${i}).%s" % (localdir, local_node), ';',
                                'done'],
-                  continue_if_error=False)
+                  continue_if_error=True)
     else:
         rpdcp_cmd = settings.common.get("rpdcp_cmd", "rpdcp")
         pdsh_ssh_args = settings.common.get("pdsh_ssh_args", None)
@@ -184,7 +184,7 @@ def rpdcp(nodes, flags, remotefile, localdir):
         if flags:
             args += [flags]
         return CheckedPopen(args + [remotefile, localdir],
-                            continue_if_error=False, env_vars=env)
+                            continue_if_error=True, env_vars=env)
 
 
 def scp(node, localfile, remotefile):
@@ -248,7 +248,7 @@ def sync_files(remote_dir, local_dir):
     if 'user' in settings.cluster:
         pdsh(nodes,
              'sudo chown -R {0}.{0} {1}'.format(settings.cluster['user'], remote_dir),
-             continue_if_error=False).communicate()
+             continue_if_error=True).communicate()
     rpdcp(nodes, '-r', remote_dir, local_dir).communicate()
 
 
