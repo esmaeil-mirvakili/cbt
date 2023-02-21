@@ -18,6 +18,7 @@ class Fio(Benchmark):
 
         # FIXME there are too many permutations, need to put results in SQLITE3
         self.cmd_path = config.get('cmd_path', '/usr/bin/fio')
+        self.fio_cnf_path = config.get('fio_conf', None)
         self.direct = str(config.get('direct', 1))
         self.time = config.get('time', None)
         self.time_based = bool(config.get('time_based', False))
@@ -148,44 +149,45 @@ class Fio(Benchmark):
         # cmd_path_full includes any valgrind or other preprocessors vs cmd_path
         cmd = 'sudo %s' % self.cmd_path_full
 
-        # IO options
-        cmd += ' --ioengine=%s' % self.ioengine
-        cmd += ' --direct=%s' % self.direct
-        if self.bssplit is not None:
-            cmd += ' --bssplit=%s' % self.bssplit
-        if self.bsrange is not None:
-            cmd += ' --bsrange=%s' % self.bsrange
-        if self.bs is not None:
-            cmd += ' --bs=%s' % self.bs
-        elif self.op_size is not None:
-            logger.warn('op_size is deprecated, please use bs in the future')
-            cmd += ' --bs=%s' % self.op_size
-        cmd += ' --iodepth=%d' % self.iodepth
-        if self.sync is not None:
-            cmd += ' --sync=%s' % self.sync
-        cmd += ' --end_fsync=%d' % self.end_fsync
-        cmd += ' --rw=%s' % self.mode
-        if (self.mode == 'readwrite' or self.mode == 'randrw'):
-            cmd += ' --rwmixread=%s --rwmixwrite=%s' % (self.rwmixread, self.rwmixwrite)
-        if self.random_distribution is not None:
-            cmd += ' --random_distribution=%s' % self.random_distribution
-        if self.rate_iops is not None:
-            cmd += ' --rate_iops=%d' % self.rate_iops
-        if self.norandommap:
-            cmd += ' --norandommap'
+        if not self.fio_cnf_path:
+            # IO options
+            cmd += ' --ioengine=%s' % self.ioengine
+            cmd += ' --direct=%s' % self.direct
+            if self.bssplit is not None:
+                cmd += ' --bssplit=%s' % self.bssplit
+            if self.bsrange is not None:
+                cmd += ' --bsrange=%s' % self.bsrange
+            if self.bs is not None:
+                cmd += ' --bs=%s' % self.bs
+            elif self.op_size is not None:
+                logger.warn('op_size is deprecated, please use bs in the future')
+                cmd += ' --bs=%s' % self.op_size
+            cmd += ' --iodepth=%d' % self.iodepth
+            if self.sync is not None:
+                cmd += ' --sync=%s' % self.sync
+            cmd += ' --end_fsync=%d' % self.end_fsync
+            cmd += ' --rw=%s' % self.mode
+            if (self.mode == 'readwrite' or self.mode == 'randrw'):
+                cmd += ' --rwmixread=%s --rwmixwrite=%s' % (self.rwmixread, self.rwmixwrite)
+            if self.random_distribution is not None:
+                cmd += ' --random_distribution=%s' % self.random_distribution
+            if self.rate_iops is not None:
+                cmd += ' --rate_iops=%d' % self.rate_iops
+            if self.norandommap:
+                cmd += ' --norandommap'
 
-        # Set the output size
-        if self.size:
-            cmd += ' --size=%dM' % self.size
-        cmd += ' --numjobs=%d' % self.numjobs
+            # Set the output size
+            if self.size:
+                cmd += ' --size=%dM' % self.size
+            cmd += ' --numjobs=%d' % self.numjobs
 
-        # Time options
-        if self.time is not None:
-            cmd += ' --runtime=%d' % self.time
-        if self.time_based is True:
-            cmd += ' --time_based'
-        if self.ramp is not None:
-            cmd += ' --ramp_time=%d' % self.ramp
+            # Time options
+            if self.time is not None:
+                cmd += ' --runtime=%d' % self.time
+            if self.time_based is True:
+                cmd += ' --time_based'
+            if self.ramp is not None:
+                cmd += ' --ramp_time=%d' % self.ramp
 
         # Put extra options before logging and output for conveneince of debugging
         cmd += self.fio_command_extra(ep_num)
@@ -201,6 +203,8 @@ class Fio(Benchmark):
         if self.extra_config is not None:
             for key, value in self.extra_config.items():
                 cmd += f' --{key}={value}'
+        if self.fio_cnf_path:
+            cmd += f' {self.fio_cnf_path}'
         # End the fio_cmd
         cmd += ' > %s' % (out_file)
         return cmd
