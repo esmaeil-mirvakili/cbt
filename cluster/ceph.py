@@ -151,6 +151,7 @@ class Ceph(Cluster):
         self.prefill_recov_object_size = 0
         self.prefill_recov_time = 0
         self.recov_pool_name = ''
+        self.osd_data_path = config.get('osd_data_path', None)
 
     def __init__(self, config, _init_threads=True):
         super(Ceph, self).__init__(config)

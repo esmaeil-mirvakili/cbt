@@ -47,6 +47,7 @@ class Fio(Benchmark):
         self.out_dir = self.archive_dir
         self.client_endpoints = config.get("client_endpoints", None)
         self.recov_test_type = config.get('recov_test_type', 'blocking')
+        self.extra_config = config.get('extra_config', None)
 
     def exists(self):
         if os.path.exists(self.out_dir):
@@ -197,7 +198,9 @@ class Fio(Benchmark):
             if self.log_avg_msec is not None:
                 cmd += ' --log_avg_msec=%d' % self.log_avg_msec
         cmd += ' --output-format=%s' % self.fio_out_format
-
+        if self.extra_config is not None:
+            for key, value in self.extra_config.items():
+                cmd += f' --{key}={value}'
         # End the fio_cmd
         cmd += ' > %s' % (out_file)
         return cmd

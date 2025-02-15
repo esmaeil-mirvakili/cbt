@@ -4,7 +4,7 @@ import collections
 import logging
 import pprint
 import sys
-
+import common
 import settings
 import benchmarkfactory
 from cluster.ceph import Ceph
@@ -58,7 +58,7 @@ def main(argv):
     # Only initialize and prefill upfront if we aren't rebuilding for each test.
     if not rebuild_every_test:
         if not cluster.use_existing:
-            cluster.initialize();
+            cluster.initialize()
         # Why does it need to iterate for the creation of benchmarks?
         for iteration in range(settings.cluster.get("iterations", 0)):
             benchmarks = benchmarkfactory.get_all(archive_dir, cluster, iteration)
@@ -80,8 +80,8 @@ def main(argv):
         for iteration in range(settings.cluster.get("iterations", 0)):
             benchmarks = benchmarkfactory.get_all(archive_dir, cluster, iteration)
             for b in benchmarks:
-                if not b.exists() and not settings.cluster.get('is_teuthology', False):
-                    continue
+                # if not b.exists() and not settings.cluster.get('is_teuthology', False):
+                #     continue
 
                 if rebuild_every_test:
                     cluster.initialize()
@@ -90,6 +90,7 @@ def main(argv):
                 b.initialize_endpoints()
                 logger.info(f"Running benchmark %s == iteration %d ==" % (b, iteration))
                 b.run()
+                common.sync_files(cluster.osd_data_path, b.archive_dir)
     except:
         return_code = 1  # FAIL
         logger.exception("During tests")
