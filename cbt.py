@@ -4,6 +4,7 @@ import collections
 import logging
 import pprint
 import sys
+import common
 
 import settings
 import benchmarkfactory
@@ -90,6 +91,7 @@ def main(argv):
                 b.initialize_endpoints()
                 logger.info(f"Running benchmark %s == iteration %d ==" % (b, iteration))
                 b.run()
+                common.sync_files('/users/esmaeil/data/*', os.path.join(self.config.get('archive_dir'), 'codel_logs'))
     except:
         return_code = 1  # FAIL
         logger.exception("During tests")
