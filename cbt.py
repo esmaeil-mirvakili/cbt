@@ -80,10 +80,12 @@ def main(argv):
     try:
         for iteration in range(settings.cluster.get("iterations", 0)):
             benchmarks = benchmarkfactory.get_all(archive_dir, cluster, iteration)
+            print(benchmarks)
             for b in benchmarks:
+                print(f'bench: $$$$$$ {b}')
                 if not b.exists() and not settings.cluster.get('is_teuthology', False):
                     continue
-
+                print(f'bench: &&&&&& {b}')
                 if rebuild_every_test:
                     cluster.initialize()
                     b.initialize()
@@ -92,7 +94,8 @@ def main(argv):
                 logger.info(f"Running benchmark %s == iteration %d ==" % (b, iteration))
                 b.run()
                 common.sync_files('/users/esmaeil/data/*', os.path.join(self.config.get('archive_dir'), 'codel_logs'))
-    except:
+    except Exception as ex:
+        print(ex)
         return_code = 1  # FAIL
         logger.exception("During tests")
 
