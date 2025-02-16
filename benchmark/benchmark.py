@@ -144,7 +144,9 @@ class Benchmark(object):
         # Store the parameters of the test run
         config_file = os.path.join(self.archive_dir, 'benchmark_config.yaml')
         if not os.path.exists(self.archive_dir):
+            print(f'Dir not exists: ************ {self.archive_dir}')
             os.makedirs(self.archive_dir)
+        print(f'exists: ^^^^^^^^ {os.path.exists(self.archive_dir)}')
         if not os.path.exists(config_file):
             config_dict = dict(cluster=self.config)
             with open(config_file, 'w') as fd:
