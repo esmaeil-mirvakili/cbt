@@ -85,8 +85,8 @@ def main(argv):
                 print(f'bench: {b.archive_dir}')
                 print(f'bench: {b.out_dir}')
                 print(f'bench: $$$$$$ {b} -> {b.exists()}')
-                if not b.exists() and not settings.cluster.get('is_teuthology', False):
-                    continue
+                # if not b.exists() and not settings.cluster.get('is_teuthology', False):
+                #     continue
                 print(f'bench: &&&&&& {b}')
                 if rebuild_every_test:
                     cluster.initialize()
