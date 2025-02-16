@@ -82,6 +82,8 @@ def main(argv):
             benchmarks = benchmarkfactory.get_all(archive_dir, cluster, iteration)
             print(benchmarks)
             for b in benchmarks:
+                print(f'bench: {b.archive_dir}')
+                print(f'bench: {b.out_dir}')
                 print(f'bench: $$$$$$ {b} -> {b.exists()}')
                 if not b.exists() and not settings.cluster.get('is_teuthology', False):
                     continue
