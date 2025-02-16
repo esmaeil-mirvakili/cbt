@@ -220,7 +220,7 @@ class Fio(Benchmark):
         self.cluster.dump_config(self.run_dir)
 
         time.sleep(5)
-
+        print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
         # Run the backfill testing thread if requested
         if 'recovery_test' in self.cluster.config:
             if self.recov_test_type == 'blocking':
@@ -238,7 +238,9 @@ class Fio(Benchmark):
         logger.info('Running fio %s test.', self.mode)
         ps = []
         for i in range(self.endpoints_per_client):
-            p = common.pdsh(settings.getnodes('clients'), self.run_command(i))
+            cmd_str = self.run_command(i)
+            print(cmd_str)
+            p = common.pdsh(settings.getnodes('clients'), cmd_str)
             ps.append(p)
         for p in ps:
             p.wait()
