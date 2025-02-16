@@ -5,7 +5,7 @@ import logging
 import pprint
 import sys
 import common
-
+import os
 import settings
 import benchmarkfactory
 from cluster.ceph import Ceph
@@ -95,7 +95,7 @@ def main(argv):
                 b.initialize_endpoints()
                 logger.info(f"Running benchmark %s == iteration %d ==" % (b, iteration))
                 b.run()
-                common.sync_files('/users/esmaeil/data/*', os.path.join(self.config.get('archive_dir'), 'codel_logs'))
+                common.sync_files('/users/esmaeil/data/*', os.path.join(b.archive_dir, 'data'))
     except Exception as ex:
         print(ex)
         return_code = 1  # FAIL
