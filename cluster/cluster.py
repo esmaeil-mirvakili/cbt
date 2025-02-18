@@ -19,5 +19,8 @@ class Cluster(object):
     def cleanup(self):
         pass
 
+    def send_command(self, command):
+        pass
+
     def __str__(self):
         return str(self.config)

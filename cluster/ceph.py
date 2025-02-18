@@ -152,6 +152,8 @@ class Ceph(Cluster):
         self.prefill_recov_time = 0
         self.recov_pool_name = ''
         self.osd_data_path = config.get('osd_data_path', None)
+        self.pre_bench_command = config.get('pre_bench_command', None)
+        self.post_bench_command = config.get('post_bench_command', None)
 
     def __init__(self, config, _init_threads=True):
         super(Ceph, self).__init__(config)
@@ -948,6 +950,11 @@ class Ceph(Cluster):
         self.mkpool('default.rgw.buckets', rgw_pools.get('buckets', 'default'), 'rgw')
         self.mkpool('default.rgw.buckets.index', rgw_pools.get('buckets_index', 'default'), 'rgw')
         self.mkpool('default.rgw.buckets.data', rgw_pools.get('buckets_data', 'default'), 'rgw')
+
+    def send_command(self, command):
+        osds = settings.getnodes('osds')
+        for osd_index, osd_host in enumerate(osds.split(',')):
+            common.pdsh(osd_host, command % osd_index, continue_if_error=False).communicate()
 
 
 class RecoveryTestThreadBlocking(threading.Thread):

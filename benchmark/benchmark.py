@@ -159,6 +159,12 @@ class Benchmark(object):
     def cleanup(self):
         pass
 
+    def pre_bench(self):
+        pass
+
+    def post_bench(self):
+        pass
+
     def dropcaches(self):
         nodes = settings.getnodes('clients', 'osds')
 

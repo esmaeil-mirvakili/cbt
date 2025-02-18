@@ -251,6 +251,16 @@ class Fio(Benchmark):
         common.sync_files('%s/*' % self.run_dir, self.out_dir)
         self.analyze(self.out_dir)
 
+    def pre_bench(self):
+        if self.cluster.pre_bench_command is not None:
+            self.cluster.send_command(self.cluster.pre_bench_command)
+
+    def post_bench(self):
+        if self.cluster.post_bench_command is not None:
+            self.cluster.send_command(self.cluster.post_bench_command)
+        if self.cluster.osd_data_path is not None:
+            common.sync_files(self.cluster.osd_data_path, self.archive_dir)
+
     def cleanup(self):
         cmd_name = pathlib.PurePath(self.cmd_path).name
         common.pdsh(settings.getnodes('clients'), 'sudo killall -2 %s' % cmd_name).communicate()

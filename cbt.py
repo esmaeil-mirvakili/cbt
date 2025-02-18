@@ -4,7 +4,6 @@ import collections
 import logging
 import pprint
 import sys
-import common
 import settings
 import benchmarkfactory
 from cluster.ceph import Ceph
@@ -89,13 +88,15 @@ def main(argv):
                 # Always try to initialize endpoints before running the test
                 b.initialize_endpoints()
                 logger.info(f"Running benchmark %s == iteration %d ==" % (b, iteration))
+                b.pre_bench()
                 b.run()
-                common.sync_files(cluster.osd_data_path, b.archive_dir)
-    except:
+                b.post_bench()
+    except Exception as ex:
         return_code = 1  # FAIL
-        logger.exception("During tests")
+        logger.exception(f"During tests:\n{ex}")
 
     return return_code
+
 
 if __name__ == '__main__':
     exit(main(sys.argv))
