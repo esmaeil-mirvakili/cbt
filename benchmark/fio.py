@@ -48,6 +48,7 @@ class Fio(Benchmark):
         self.client_endpoints = config.get("client_endpoints", None)
         self.recov_test_type = config.get('recov_test_type', 'blocking')
         self.extra_config = config.get('extra_config', None)
+        self.order = config.get('order', 0)
 
     def exists(self):
         if os.path.exists(self.out_dir):

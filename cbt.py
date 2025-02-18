@@ -48,6 +48,8 @@ def main(argv):
 
     global_init = collections.OrderedDict()
     rebuild_every_test = settings.cluster.get('rebuild_every_test', False)
+    if rebuild_every_test:
+        print("\033[91m WARNING: rebuild_every_test is on.....\033[0m")
     archive_dir = settings.cluster.get('archive_dir')
 
 
@@ -78,6 +80,8 @@ def main(argv):
     try:
         for iteration in range(settings.cluster.get("iterations", 0)):
             benchmarks = benchmarkfactory.get_all(archive_dir, cluster, iteration)
+            benchmarks = [b for b in benchmarks]
+            benchmarks = sorted(benchmarks, key=lambda bench: bench.order)
             for b in benchmarks:
                 # if not b.exists() and not settings.cluster.get('is_teuthology', False):
                 #     continue

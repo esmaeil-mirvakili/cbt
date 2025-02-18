@@ -42,6 +42,7 @@ class Benchmark(object):
             self.osd_ra_changed = True
         else:
             self.osd_ra = common.get_osd_ra()
+        self.order = 0
 
     def create_data_analyzer(self, run, host, proc):
         pass
