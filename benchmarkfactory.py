@@ -20,6 +20,8 @@ def get_all(archive, cluster, iteration):
                    "iteration": iteration}
         for current in all_configs(config):
             current.update(default)
+            if config['type'] is not None:
+                benchmark = config['type']
             yield get_object(archive, cluster, benchmark, current)
 
 
