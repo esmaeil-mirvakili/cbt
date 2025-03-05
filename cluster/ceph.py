@@ -153,8 +153,8 @@ class Ceph(Cluster):
         self.prefill_recov_time = 0
         self.recov_pool_name = ''
         self.osd_data_path = config.get('osd_data_path', None)
-        self.pre_bench_commands = config.get('pre_bench_command', None)
-        self.post_bench_commands = config.get('post_bench_command', None)
+        self.pre_bench_commands = config.get('pre_bench_commands', [])
+        self.post_bench_commands = config.get('post_bench_commands', [])
 
     def __init__(self, config, _init_threads=True):
         super(Ceph, self).__init__(config)
@@ -899,8 +899,6 @@ class Ceph(Cluster):
             dp_option = "--data-pool %s" % data_pool
         try:
             common.pdsh(settings.getnodes('head'), '%s -c %s create %s --size %s --pool %s %s --order %s' % (self.rbd_cmd, self.tmp_conf, name, size, pool, dp_option, order), continue_if_error=False).communicate()
-            common.pdsh(settings.getnodes('head'), '%s -c %s map %s --pool %s --name client.admin' % (self.rbd_cmd, self.tmp_conf, name, pool), continue_if_error=False).communicate()
-            common.pdsh(settings.getnodes('head'), 'rbd showmapped', continue_if_error=True).communicate()
         except Exception as e:
             logger.error(str(e))
 

@@ -99,7 +99,6 @@ class CephClientEndpoints(ClientEndpoints):
                 # Make the RBD Image
                 cmd = '%s -c %s create %s --pool %s --size %s %s --order %s' % (self.rbd_cmd, self.tmp_conf, rbd_name, self.pool, self.endpoint_size, dp_option, self.order)
                 common.pdsh(settings.getnodes('head'), cmd, continue_if_error=False).communicate()
-
                 # Disable Features
                 if self.disabled_features:
                     cmd = 'sudo %s feature disable %s/%s %s' % (self.rbd_cmd, self.pool, rbd_name, self.disabled_features)

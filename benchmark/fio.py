@@ -91,9 +91,9 @@ class Fio(Benchmark):
         if aggregate_size > endpoint_size:
             raise ValueError("Aggregate fio data size (%dKB) exceeds end_point size (%dKB)! Please check numjobs, procs_per_endpoint, and size settings." % (aggregate_size, endpoint_size))
 
-        if self.endpoint_type == 'rbd' and self.ioengine != 'rbd':
-            logger.warn('rbd endpoints must use the librbd fio engine! Setting ioengine=rbd')
-            self.ioengine = 'rbd'
+        # if self.endpoint_type == 'rbd' and self.ioengine != 'rbd':
+        #     logger.warn('rbd endpoints must use the librbd fio engine! Setting ioengine=rbd')
+        #     self.ioengine = 'rbd'
         if self.endpoint_type == 'rbd' and self.direct != '1':
             logger.warn('rbd endpoints must use O_DIRECT. Setting direct=1')
             self.direct = '1'
@@ -109,6 +109,10 @@ class Fio(Benchmark):
         # handle rbd endpoints with the librbbd engine.
         elif self.endpoint_type == 'rbd':
             pool_name, rbd_name = self.endpoints[ep_num].split("/")
+            common.pdsh(settings.getnodes('head'),
+                        '%s -c %s map %s --pool %s --name client.admin' % (self.cluster.rbd_cmd, self.cluster.tmp_conf, rbd_name, pool_name),
+                        continue_if_error=False).communicate()
+            common.pdsh(settings.getnodes('head'), 'rbd showmapped', continue_if_error=True).communicate()
             cmd += ' --clientname=admin'
             cmd += ' --pool=%s' % pool_name
             cmd += ' --rbdname=%s' % rbd_name
