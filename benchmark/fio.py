@@ -253,14 +253,19 @@ class Fio(Benchmark):
         self.analyze(self.out_dir)
 
     def pre_bench(self):
-        if self.cluster.pre_bench_command is not None:
-            self.cluster.send_command(self.cluster.pre_bench_command)
+        if self.cluster.pre_bench_commands is not None:
+            for command in self.cluster.pre_bench_commands:
+                self.cluster.send_command(command)
 
     def post_bench(self):
-        if self.cluster.post_bench_command is not None:
-            self.cluster.send_command(self.cluster.post_bench_command)
+        if self.cluster.post_bench_commands is not None:
+            for command in self.cluster.post_bench_commands:
+                self.cluster.send_command(command)
+        time.sleep(10)
         if self.cluster.osd_data_path is not None:
             common.sync_files(self.cluster.osd_data_path, self.archive_dir)
+            remove_cmd = f'rm -rf {os.path.join(self.cluster.osd_data_path, "*")}'
+            self.cluster.send_command(remove_cmd)
 
     def cleanup(self):
         cmd_name = pathlib.PurePath(self.cmd_path).name
