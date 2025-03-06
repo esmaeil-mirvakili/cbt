@@ -48,6 +48,9 @@ class Fio(Benchmark):
         self.client_endpoints = config.get("client_endpoints", None)
         self.recov_test_type = config.get('recov_test_type', 'blocking')
         self.extra_config = config.get('extra_config', None)
+        self.replay_io = False
+        if self.extra_config is not None and 'read_iolog' in self.extra_config:
+            self.replay_io = True
         self.order = config.get('order', 0)
 
     def exists(self):
@@ -114,10 +117,11 @@ class Fio(Benchmark):
                         'sudo %s -c %s map %s --pool %s --name client.admin' % (self.cluster.rbd_cmd, self.cluster.tmp_conf, rbd_name, pool_name),
                         continue_if_error=False).communicate()
             common.pdsh(settings.getnodes('head'), 'rbd showmapped', continue_if_error=True).communicate()
-            cmd += ' --clientname=admin'
-            cmd += ' --pool=%s' % pool_name
-            cmd += ' --rbdname=%s' % rbd_name
-            cmd += ' --invalidate=0'
+            if not self.replay_io:
+                cmd += ' --clientname=admin'
+                cmd += ' --pool=%s' % pool_name
+                cmd += ' --rbdname=%s' % rbd_name
+                cmd += ' --invalidate=0'
             for proc_num in range(self.procs_per_endpoint):
                 rbd_name = '%s-%d' % (self.endpoints[ep_num], proc_num)
                 cmd += ' --name=%s' % rbd_name
@@ -161,9 +165,9 @@ class Fio(Benchmark):
             cmd += ' --bssplit=%s' % self.bssplit
         if self.bsrange is not None:
             cmd += ' --bsrange=%s' % self.bsrange
-        if self.bs is not None:
+        if self.bs is not None and not self.replay_io:
             cmd += ' --bs=%s' % self.bs
-        elif self.op_size is not None:
+        elif self.op_size is not None and not self.replay_io:
             logger.warn('op_size is deprecated, please use bs in the future')
             cmd += ' --bs=%s' % self.op_size
         cmd += ' --iodepth=%d' % self.iodepth
@@ -171,7 +175,7 @@ class Fio(Benchmark):
             cmd += ' --sync=%s' % self.sync
         cmd += ' --end_fsync=%d' % self.end_fsync
         cmd += ' --rw=%s' % self.mode
-        if (self.mode == 'readwrite' or self.mode == 'randrw'):
+        if (self.mode == 'readwrite' or self.mode == 'randrw') and not self.replay_io:
             cmd += ' --rwmixread=%s --rwmixwrite=%s' % (self.rwmixread, self.rwmixwrite)
         if self.random_distribution is not None:
             cmd += ' --random_distribution=%s' % self.random_distribution
