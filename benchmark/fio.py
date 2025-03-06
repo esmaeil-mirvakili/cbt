@@ -110,7 +110,7 @@ class Fio(Benchmark):
         elif self.endpoint_type == 'rbd':
             pool_name, rbd_name = self.endpoints[ep_num].split("/")
             common.pdsh(settings.getnodes('head'),
-                        '%s -c %s map %s --pool %s --name client.admin' % (self.cluster.rbd_cmd, self.cluster.tmp_conf, rbd_name, pool_name),
+                        'sudo %s -c %s map %s --pool %s --name client.admin' % (self.cluster.rbd_cmd, self.cluster.tmp_conf, rbd_name, pool_name),
                         continue_if_error=False).communicate()
             common.pdsh(settings.getnodes('head'), 'rbd showmapped', continue_if_error=True).communicate()
             cmd += ' --clientname=admin'
