@@ -8,6 +8,7 @@ import threading
 import logging
 import json
 import re
+from collections import defaultdict
 
 from .cluster import Cluster
 
@@ -958,7 +959,9 @@ class Ceph(Cluster):
             m = re.search('^.*@osd(\d+)$', osd_host)
             if m:
                 osd_index = int(m.group(1))
-                common.pdsh(osd_host, command % osd_index, continue_if_error=False).communicate()
+                params = defaultdict(lambda: "")
+                params["osd_id"] = osd_index
+                common.pdsh(osd_host, command.format_map(params), continue_if_error=False).communicate()
 
 
 class RecoveryTestThreadBlocking(threading.Thread):
