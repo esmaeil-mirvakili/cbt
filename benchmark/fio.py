@@ -112,7 +112,7 @@ class Fio(Benchmark):
         # handle rbd endpoints with the librbbd engine.
         elif self.endpoint_type == 'rbd':
             pool_name, rbd_name = self.endpoints[ep_num].split("/")
-            common.pdsh(settings.getnodes('head'), 'sudo rbd unmap /dev/rbd0', continue_if_error=True).communicate()
+            common.pdsh(settings.getnodes('head'), 'sudo %s unmap /dev/rbd0' % (self.cluster.rbd_cmd), continue_if_error=True).communicate()
             common.pdsh(settings.getnodes('head'),
                         'sudo %s -c %s map %s --pool %s --name client.admin' % (self.cluster.rbd_cmd, self.cluster.tmp_conf, rbd_name, pool_name),
                         continue_if_error=False).communicate()
