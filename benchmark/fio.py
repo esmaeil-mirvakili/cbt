@@ -242,6 +242,7 @@ class Fio(Benchmark):
             self.cluster.wait_start_io()
 
         monitoring.start(self.run_dir)
+        self.pre_bench()
 
         logger.info('Running fio %s test.', self.mode)
         ps = []
@@ -254,6 +255,7 @@ class Fio(Benchmark):
         if 'recovery_test' in self.cluster.config:
             self.cluster.wait_recovery_done()
 
+        self.post_bench()
         monitoring.stop(self.run_dir)
 
         # Finally, get the historic ops

@@ -92,9 +92,7 @@ def main(argv):
                 # Always try to initialize endpoints before running the test
                 b.initialize_endpoints()
                 logger.info(f"Running benchmark %s == iteration %d ==" % (b, iteration))
-                b.pre_bench()
                 b.run()
-                b.post_bench()
     except Exception as ex:
         return_code = 1  # FAIL
         logger.exception(f"During tests:\n{ex}")
