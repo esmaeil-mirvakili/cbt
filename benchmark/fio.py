@@ -265,18 +265,24 @@ class Fio(Benchmark):
 
     def pre_bench(self):
         if self.cluster.pre_bench_commands is not None:
+            exclude = []
+            if 'exclude_recovery' in self.cluster.config and self.cluster.config['exclude_recovery'] and 'recovery_test' in self.cluster.config and 'osds' in self.cluster.config['recovery_test']:
+                exclude = self.cluster.config['recovery_test']['osds']
             for command in self.cluster.pre_bench_commands:
-                self.cluster.send_command(command)
+                self.cluster.send_command(command, exclude=exclude)
 
     def post_bench(self):
+        exclude = []
+        if 'exclude_recovery' in self.cluster.config and self.cluster.config['exclude_recovery'] and 'recovery_test' in self.cluster.config and 'osds' in self.cluster.config['recovery_test']:
+            exclude = self.cluster.config['recovery_test']['osds']
         if self.cluster.post_bench_commands is not None:
             for command in self.cluster.post_bench_commands:
-                self.cluster.send_command(command)
+                self.cluster.send_command(command, exclude=exclude)
         time.sleep(10)
         if self.cluster.osd_data_path is not None:
             common.sync_files(self.cluster.osd_data_path, self.archive_dir)
             remove_cmd = f'rm -rf {os.path.join(self.cluster.osd_data_path, "*")}'
-            self.cluster.send_command(remove_cmd)
+            self.cluster.send_command(remove_cmd, exclude=exclude)
 
     def cleanup(self):
         cmd_name = pathlib.PurePath(self.cmd_path).name

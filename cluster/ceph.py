@@ -953,12 +953,14 @@ class Ceph(Cluster):
         self.mkpool('default.rgw.buckets.index', rgw_pools.get('buckets_index', 'default'), 'rgw')
         self.mkpool('default.rgw.buckets.data', rgw_pools.get('buckets_data', 'default'), 'rgw')
 
-    def send_command(self, command):
+    def send_command(self, command, exclude=[]):
         osds = settings.getnodes('osds')
         for osd_host in osds.split(','):
             m = re.search('^.*@osd(\d+)$', osd_host)
             if m:
                 osd_index = int(m.group(1))
+                if osd_index in exclude:
+                    continue
                 params = defaultdict(lambda: "")
                 params["osd_id"] = osd_index
                 common.pdsh(osd_host, command.format_map(params), continue_if_error=False).communicate()

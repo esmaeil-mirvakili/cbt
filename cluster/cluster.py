@@ -19,7 +19,7 @@ class Cluster(object):
     def cleanup(self):
         pass
 
-    def send_command(self, command):
+    def send_command(self, command, exclude=[]):
         pass
 
     def __str__(self):
